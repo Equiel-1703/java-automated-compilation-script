@@ -17,11 +17,11 @@ def show_menu(compilation_options: CompilationOptions) -> str:
 		str: The choice made by the user.
 	"""
 	print(f"{TerminalColors.HEADER} - Automated Java Compilation Script by Equiel_1703 - {TerminalColors.ENDC}")
-	print()
-	print(f"{TerminalColors.OKBLUE}+ Source Folder (absolute path): {compilation_options.src_folder}")
-	print(f"+ Class Path (absolute path): {compilation_options.class_path}")
-	print(f"+ Main Class Path: {compilation_options.main_class_path}{TerminalColors.ENDC}")
-	print()
+	print(f"{TerminalColors.OKCYAN}")
+	print(f"\t+ Source Folder (absolute path): {compilation_options.src_folder}")
+	print(f"\t+ Class Path (absolute path): {compilation_options.class_path}")
+	print(f"\t+ Main Class Path: {compilation_options.main_class_path}")
+	print(f"{TerminalColors.ENDC}")
 	print("Choose an option:")
 	print("1. Compile all Java files in the source folder")
 	print("2. Compile specific Java files in the source folder")
@@ -301,7 +301,7 @@ def setup_compilation_options(compilation_options: CompilationOptions):
 			os.system(clear_command)
 			continue
 	
-	compilation_options.create_compilation_options_file(os.curdir)
+	compilation_options.create_compilation_options_file()
 	print(f"{TerminalColors.OKGREEN}Compilation options updated!{TerminalColors.ENDC}")
 
 # Main program
@@ -317,14 +317,14 @@ if __name__ == "__main__":
 		clear_command = "clear"
 
 	# Check if the compilation options file exists
-	if CompilationOptions.check_if_compilation_options_file_exists(os.curdir):
+	if CompilationOptions.check_if_compilation_options_file_exists():
 		# If the file exists, we must load the compilation options from it
-		compilation_options = CompilationOptions.load_compilation_options_file(os.curdir)
+		compilation_options = CompilationOptions.load_compilation_options_file()
 	else:
 		# If the file does not exist, we must process the arguments provided by the user
 		compilation_options = _process_args()
 		# And create the compilation options file
-		compilation_options.create_compilation_options_file(os.curdir)
+		compilation_options.create_compilation_options_file()
 
 	# Program loop
 	while True:

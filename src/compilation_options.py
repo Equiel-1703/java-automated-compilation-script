@@ -5,7 +5,8 @@ import sys
 from terminal_colors import TerminalColors
 
 class CompilationOptions:
-	name_of_file = "compilation_options.json"
+	_name_of_file = "compilation_options.json"
+	_directory_path = os.path.abspath(os.path.join(os.path.pardir, "config"))
 
 	src_folder: str
 	main_class_path: str
@@ -114,28 +115,25 @@ class CompilationOptions:
 		self.class_path = self._validate_folder(class_path)
 
 	@staticmethod
-	def check_if_compilation_options_file_exists(path: str) -> bool:
+	def check_if_compilation_options_file_exists() -> bool:
 		"""
-		Checks if the compilation options file exists in the specified path.
-
-		Args:
-			path (str): The path to check if the file exists.
+		Checks if the compilation options file exists in its default directory.
 
 		Returns:
 			bool: True if the file exists, False otherwise.
 		"""
-		return os.path.exists(os.path.join(path, CompilationOptions.name_of_file))
+		return os.path.exists(os.path.join(CompilationOptions._directory_path, CompilationOptions._name_of_file))
 	
 	@staticmethod
-	def load_compilation_options_file(path: str) -> "CompilationOptions":
+	def load_compilation_options_file() -> "CompilationOptions":
 		"""
 		Loads the compilation options from the path specified. The name of the file must be %s.
 
-		Args:
-			path (str): The path of the file to load.
-		""".format(CompilationOptions.name_of_file)
+		Returns:
+			CompilationOptions: The CompilationOptions object with the loaded options.
+		""".format(CompilationOptions._name_of_file)
 
-		path = os.path.join(path, CompilationOptions.name_of_file)
+		path = os.path.join(CompilationOptions._directory_path, CompilationOptions.name_of_file)
 
 		# Load the dictionary from the file
 		with open(path, "r") as file:
@@ -155,7 +153,7 @@ class CompilationOptions:
 
 		return compilation_options_obj
 	
-	def create_compilation_options_file(self, path: str) -> None:
+	def create_compilation_options_file(self) -> None:
 		"""
 		Creates a compilation options file with the name %s in the specified path.
 
@@ -163,19 +161,19 @@ class CompilationOptions:
 		
 		Args:
 			path (str): The path to create the file in.
-		""".format(self.name_of_file)
+		""".format(self._name_of_file)
 
 		# Create the dictionary with the compilation options
 		compilation_options = {
+			"src_folder": self.src_folder,
+			"main_class_path": self.main_class_path,
+			"class_path": self.class_path,
 			"verbose": self.verbose,
 			"encoding": self.encoding,
-			"compiler": self.compiler,
-			"class_path": self.class_path,
-			"main_class_path": self.main_class_path,
-			"src_folder": self.src_folder
+			"compiler": self.compiler
 		}
 
-		path = os.path.join(path, self.name_of_file)
+		path = os.path.join(self._directory_path, self._name_of_file)
 
 		# Write the dictionary to the file
 		with open(path, "w") as file:
