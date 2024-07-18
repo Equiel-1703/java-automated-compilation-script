@@ -133,7 +133,7 @@ class CompilationOptions:
 			CompilationOptions: The CompilationOptions object with the loaded options.
 		""".format(CompilationOptions._name_of_file)
 
-		path = os.path.join(CompilationOptions._directory_path, CompilationOptions.name_of_file)
+		path = os.path.join(CompilationOptions._directory_path, CompilationOptions._name_of_file)
 
 		# Load the dictionary from the file
 		with open(path, "r") as file:
