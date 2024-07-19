@@ -2,9 +2,9 @@ import os
 import sys
 import subprocess
 
-from modules.exceptions import *
-from modules.compilation_options import CompilationOptions
-from modules.terminal_colors import TerminalColors
+from jacs_modules.exceptions import *
+from jacs_modules.compilation_options import CompilationOptions
+from jacs_modules.terminal_colors import TerminalColors
 
 def show_menu(compilation_options: CompilationOptions) -> str:
 	"""

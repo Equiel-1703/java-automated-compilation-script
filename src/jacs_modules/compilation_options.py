@@ -2,7 +2,7 @@ import json
 import os
 import sys
 
-from terminal_colors import TerminalColors
+from jacs_modules.terminal_colors import TerminalColors
 
 class CompilationOptions:
 	_name_of_file = "compilation_options.json"
