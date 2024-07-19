@@ -6,7 +6,7 @@ from jacs_modules.terminal_colors import TerminalColors
 
 class CompilationOptions:
 	_name_of_file = "compilation_options.json"
-	_directory_path = os.path.abspath(os.path.join(os.path.pardir, "config"))
+	_directory_path = os.path.abspath(os.path.join(os.path.curdir, "jacs_config"))
 
 	src_folder: str
 	main_class_path: str
@@ -174,6 +174,10 @@ class CompilationOptions:
 		}
 
 		path = os.path.join(self._directory_path, self._name_of_file)
+
+		# Create the directory if it does not exist
+		if not os.path.exists(self._directory_path):
+			os.makedirs(self._directory_path)
 
 		# Write the dictionary to the file
 		with open(path, "w") as file:
