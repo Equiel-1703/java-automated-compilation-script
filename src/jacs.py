@@ -231,6 +231,7 @@ def compile_and_run_project(compilation_options: CompilationOptions):
 	main_file = os.path.join(compilation_options.src_folder, compilation_options.main_class_path.replace(".", os.sep) + ".java")
 	
 	# Compile the main file
+	print(f"\n{TerminalColors.OKCYAN}Compiling file: {main_file}{TerminalColors.ENDC}")
 	_compile_file(main_file, compilation_options)
 
 	# Run the project
@@ -358,5 +359,5 @@ if __name__ == "__main__":
 			print(f"{TerminalColors.FAIL}Error> Invalid option!{TerminalColors.ENDC}", file=sys.stderr)
 			continue
 
-		input("\nPress Enter to continue...")
+		input(f"\n{TerminalColors.WARNING}Press Enter to continue...{TerminalColors.ENDC}")
 		os.system(clear_command)
