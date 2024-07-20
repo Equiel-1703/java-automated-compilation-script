@@ -2,4 +2,6 @@
 
 SET jacs_path=%~dp0jacs\jacs.py
 
-start python %jacs_path% %*
+python %jacs_path% %*
+
+exit /b 0

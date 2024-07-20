@@ -6,8 +6,10 @@ from jacs_modules.terminal_colors import TerminalColors
 
 class CompilationOptions:
 	_name_of_file = "compilation_options.json"
-	# This will create a folder in the CURRENT DIRECTORY called ".jacs_config", this will not create in the MODULE directory
-	_directory_path = os.path.abspath(os.path.join(os.path.curdir, ".jacs_config"))
+	_config_folder_name = ".jacs_config"
+	
+	# By default, the configuration folder will be in the current working directory (from where the program was executed)
+	_config_folder_path: str = os.path.join(os.path.curdir, _config_folder_name)
 
 	src_folder: str
 	main_class_path: str
@@ -60,7 +62,7 @@ class CompilationOptions:
 			exit(1)
 		
 		return absolute_path
-	
+
 	def set_verbose(self, verbose: bool) -> None:
 		"""
 		Sets the verbose option.
@@ -116,25 +118,41 @@ class CompilationOptions:
 		self.class_path = self._validate_folder(class_path)
 
 	@staticmethod
-	def check_if_compilation_options_file_exists() -> bool:
+	def check_if_compilation_options_file_exists(path: str) -> bool:
 		"""
-		Checks if the compilation options file exists in its default directory.
+		Checks if the compilation options file exists in the given path.
+
+		Args:
+			path (str): The path to check the existence of the file in.
 
 		Returns:
 			bool: True if the file exists, False otherwise.
 		"""
-		return os.path.exists(os.path.join(CompilationOptions._directory_path, CompilationOptions._name_of_file))
+
+		return os.path.exists(os.path.join(path, CompilationOptions._config_folder_name, CompilationOptions._name_of_file))
 	
+	@staticmethod
+	def set_config_folder_path(path: str) -> None:
+		"""
+		Sets the path of the configuration folder.
+
+		By default, the configuration folder will be in the current working directory (from where the program was executed).
+
+		Args:
+			path (str): The path to set.
+		"""
+		CompilationOptions._config_folder_path = os.path.abspath(os.path.join(path, CompilationOptions._config_folder_name))
+
 	@staticmethod
 	def load_compilation_options_file() -> "CompilationOptions":
 		"""
-		Loads the compilation options from the path specified. The name of the file must be %s.
+		Loads the compilation options from the saved path. The name of the file must be %s.
 
 		Returns:
 			CompilationOptions: The CompilationOptions object with the loaded options.
 		""".format(CompilationOptions._name_of_file)
 
-		path = os.path.join(CompilationOptions._directory_path, CompilationOptions._name_of_file)
+		path = os.path.join(CompilationOptions._config_folder_path, CompilationOptions._name_of_file)
 
 		# Load the dictionary from the file
 		with open(path, "r") as file:
@@ -156,7 +174,7 @@ class CompilationOptions:
 	
 	def create_compilation_options_file(self) -> None:
 		"""
-		Creates a compilation options file with the name %s in the specified path.
+		Creates a compilation options file with the name %s in the path saved in the object.
 
 		The options saved are the current ones of this object.
 		
@@ -174,11 +192,11 @@ class CompilationOptions:
 			"compiler": self.compiler
 		}
 
-		path = os.path.join(self._directory_path, self._name_of_file)
+		path = os.path.join(CompilationOptions._config_folder_path, CompilationOptions._name_of_file)
 
 		# Create the directory if it does not exist
-		if not os.path.exists(self._directory_path):
-			os.makedirs(self._directory_path)
+		if not os.path.exists(CompilationOptions._config_folder_path):
+			os.makedirs(CompilationOptions._config_folder_path)
 
 		# Write the dictionary to the file
 		with open(path, "w") as file:

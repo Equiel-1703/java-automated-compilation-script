@@ -101,30 +101,35 @@ def _process_args() -> CompilationOptions:
 	# Check if the user provided too many arguments
 	if len(sys.argv) > 4:
 		print(f"{TerminalColors.FAIL}Error> Too many arguments provided!{TerminalColors.ENDC}", file=sys.stderr)
-		print(f"Usage: python {sys.argv[0]} [source_folder] [class_path]", file=sys.stderr)
+		print(f"Usage: python {sys.argv[0]} [source_folder] [main_class_path] [class_path]", file=sys.stderr)
 		exit(1)
 
 	if len(sys.argv) == 1:
 		# If no arguments were provided, we must ask the user for the source folder and the main class path
 		src_folder = input("Folder containing the source code: ").strip()
-		main_path = input("Main class path: ").strip()
-	elif len(sys.argv) == 2:
-		# If the user provided a single argument, we must use it as the source folder and ask for the main class path
+	elif len(sys.argv) >= 2:
+		# If the user provided at least one argument, we must use it as the source folder
 		src_folder = sys.argv[1]
+	
+	# Check if the CompilationOptions file exists in the parent of the source folder
+	src_parent = os.path.abspath(os.path.join(src_folder, os.pardir))
+	if CompilationOptions.check_if_compilation_options_file_exists(src_parent):
+		# If the file exists, we must set this as the compilation options path
+		CompilationOptions.set_config_folder_path(src_parent)
+		# Load the compilation options from the file
+		compilation_options = CompilationOptions.load_compilation_options_file()
+		return compilation_options
+	
+	if len(sys.argv) == 2:
+		# If the user provided only one argument, we must ask for the main class path
 		main_path = input("Main class path: ").strip()
-	elif len(sys.argv) == 3:
-		# If the user provided two arguments, we must use them as the source folder and the main class path
-		src_folder = sys.argv[1]
+	elif len(sys.argv) >= 3:
+		# If the user provided two arguments or more, we must use the second argument as the main class path
 		main_path = sys.argv[2]
 	
 	if len(sys.argv) == 4:
-		# If the user provided three arguments, we must use them as the source folder, the main class path, and the class path
-		src_folder = sys.argv[1]
-		main_path = sys.argv[2]
+		# If the user provided four arguments, we must use the third argument as the class path
 		class_path = sys.argv[3]
-
-		# Create compilation options
-		compilation_options = CompilationOptions(src_folder, main_path, class_path)
 	else:
 		# Check if user want to define the class path
 		class_path = input("Class path (leave empty to use the source folder as the class path): ").strip()
@@ -132,8 +137,8 @@ def _process_args() -> CompilationOptions:
 		if class_path == "":
 			class_path = src_folder
 		
-		# Create compilation
-		compilation_options = CompilationOptions(src_folder, main_path, class_path)
+	# Create compilation
+	compilation_options = CompilationOptions(src_folder, main_path, class_path)
 	
 	return compilation_options
 
@@ -317,8 +322,8 @@ if __name__ == "__main__":
 		# If the OS is not Windows, we must use the "clear" command
 		clear_command = "clear"
 
-	# Check if the compilation options file exists
-	if CompilationOptions.check_if_compilation_options_file_exists():
+	# Check if the compilation options file exists in the current directory
+	if CompilationOptions.check_if_compilation_options_file_exists(os.path.curdir):
 		# If the file exists, we must load the compilation options from it
 		compilation_options = CompilationOptions.load_compilation_options_file()
 	else:
