@@ -6,7 +6,8 @@ from jacs_modules.terminal_colors import TerminalColors
 
 class CompilationOptions:
 	_name_of_file = "compilation_options.json"
-	_directory_path = os.path.abspath(os.path.join(os.path.curdir, "jacs_config"))
+	# This will create a folder in the CURRENT DIRECTORY called ".jacs_config", this will not create in the MODULE directory
+	_directory_path = os.path.abspath(os.path.join(os.path.curdir, ".jacs_config"))
 
 	src_folder: str
 	main_class_path: str
