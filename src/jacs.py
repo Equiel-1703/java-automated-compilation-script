@@ -27,7 +27,8 @@ def show_menu(compilation_options: CompilationOptions) -> str:
 	print("2. Compile specific Java files in the source folder")
 	print("3. Clear build")
 	print("4. Compile and run project")
-	print("5. Setup compilation options")
+	print("5. Compile and run file")
+	print("6. Setup compilation options")
 	print("0. Exit")
 
 	choice = input().strip()
@@ -189,7 +190,7 @@ def compile_specific_files(compilation_options: CompilationOptions) -> None:
 	files_to_compile = [*filter(lambda file_index: file_index.isdigit() and 1 <= int(file_index) <= len(files_available), files_to_compile)]
 
 	if len(files_to_compile) == 0:
-		print(f"{TerminalColors.FAIL}Error> No files were selected!{TerminalColors.ENDC}", file=sys.stderr)
+		print(f"{TerminalColors.FAIL}Error> No valid files were selected!{TerminalColors.ENDC}", file=sys.stderr)
 		return
 	
 	# Get the files paths
@@ -245,6 +246,50 @@ def compile_and_run_project(compilation_options: CompilationOptions):
 
 	if result.returncode != 0:
 		print(f"{TerminalColors.FAIL}Error> Could not run the project!{TerminalColors.ENDC}", file=sys.stderr)
+		print("\n" + result.stderr, file=sys.stderr)
+		return
+
+	print("\n" + result.stdout)
+
+def compile_and_run_file(compilation_options: CompilationOptions):
+	"""
+	Compiles and runs a specific .java file.
+
+	Args:
+		compilation_options (CompilationOptions): The compilation options to use when compiling and running the file.
+	"""
+	files_available = _posorder_traversal(compilation_options.src_folder, lambda file: file.endswith(".java"))
+
+	# Print the list of available files to the user
+	print("Files available:")
+	for i, file_index in enumerate(files_available):
+		print(f"{i + 1}. {file_index.removeprefix(compilation_options.src_folder + os.sep)}")
+	
+	# Get user choice
+	file_index = input("\nSelect the file to compile and run: ").strip()
+
+	# Check if file is valid
+	if not (file_index.isdigit() and 1 <= int(file_index) <= len(files_available)):
+		print(f"{TerminalColors.FAIL}Error> No valid files were selected!{TerminalColors.ENDC}", file=sys.stderr)
+		return
+
+	file_path = files_available[int(file_index) - 1]
+
+	print(f"\n{TerminalColors.OKCYAN}Compiling file: {file_path}{TerminalColors.ENDC}")
+
+	# Compiling desired file
+	try:
+		_compile_file(file_path, compilation_options)
+	except CompilationError:
+		print(f"\n{TerminalColors.FAIL}Error> Could not compile the file(s)!{TerminalColors.ENDC}", file=sys.stderr)
+		return
+
+	# Run the file
+	command = ["java", "-cp", compilation_options.class_path, file_path]
+	result = subprocess.run(command, capture_output=True, text=True)
+
+	if result.returncode != 0:
+		print(f"{TerminalColors.FAIL}Error> Could not run the file!{TerminalColors.ENDC}", file=sys.stderr)
 		print("\n" + result.stderr, file=sys.stderr)
 		return
 
@@ -353,6 +398,10 @@ if __name__ == "__main__":
 			os.system(clear_command)
 			compile_and_run_project(compilation_options)
 		elif choice == "5":
+			# Compile and run file
+			os.system(clear_command)
+			compile_and_run_file(compilation_options)
+		elif choice == "6":
 			# Setup compilation options
 			os.system(clear_command)
 			setup_compilation_options(compilation_options)
